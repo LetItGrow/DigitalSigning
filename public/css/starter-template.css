@@ -1,0 +1,75 @@
+html, body {
+    background: url("../img/dark_geometric.png") repeat;
+    /*background-color: #333;*/
+}
+
+body {
+    padding-top: 50px;
+    color: #fff;
+    /*text-shadow: 0 1px 3px rgba(0, 0, 0, .5);*/
+}
+
+.controls-group {
+    margin-bottom: 20px;
+}
+
+.btn-verification {
+    font-weight: bold;
+}
+
+.alert-verification {
+    display: block;
+
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td, .table-striped > tbody > tr:nth-child(odd) > th {
+    background-color: rgba(249, 249, 249, .1);
+    /*background-color: #f9f9f9;*/
+}
+
+.results-template {
+    display: none;
+}
+
+table {
+    table-layout: fixed;
+}
+
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+td.results-time {
+    text-align: right;
+}
+
+.table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
+    background-color: rgba(249, 249, 249, .1);
+}
+
+.generate-button-group {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.generate-button-group .btn {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#upload-key-group .form-control{
+    margin-right: 8px;
+
+}
+
+.input-error {
+    background-color: #ffd9d9;
+}
+
+.cover {
+    width: 50%;
+    text-align: center;
+    margin: 100px auto 0;
+}

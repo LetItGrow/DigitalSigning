@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--<link rel="shortcut icon" href="../../Downloads/bootstrap-3.1.1/docs/assets/ico/favicon.ico">-->
+
+    <title>Digital Signing</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="css/starter-template.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Digital Signing</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Info</a></li>
+                <li><a href="generate">Generate key pair</a></li>
+                <li><a href="sign">Sign document</a></li>
+                <li class="active"><a href="tests">Tests</a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="col-md-8 col-md-offset-2">
+        <h1>Efficiency Tests</h1>
+
+        <!-- Options and button column -->
+        <button id="run-efficiency-btn" type="button" class="btn btn-success">Run tests</button>
+
+        <div id="efficiency-results" style="display: none">
+            <h3>Results</h3>
+
+            <div id="efficiency-alert" class="alert alert-warning"><strong>Running tests.</strong> This might freeze
+                your browser for a few seconds...
+            </div>
+            <table id="efficiency-results-table" class="table table-hover" style="display: none">
+                <thead>
+                <tr>
+                    <th>Key size</th>
+                    <th>Document</th>
+                    <th>Mean time</th>
+                    <th>Signature</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- template -->
+                <tr class="results-template">
+                    <td class="result-size">### bits</td>
+                    <td class="result-document"><a href="#">document</a></td>
+                    <td class="result-time"># ms</td>
+                    <td class="result-signature">signature</td>
+                </tr>
+                <!-- / template -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="col-md-8 col-md-offset-2">
+        <h1>Validation Tests</h1>
+
+        <!-- Options and button column -->
+        <button id="run-validation-btn" type="button" class="btn btn-success">Run tests</button>
+
+        <div id="validation-results" style="display: none">
+            <h3>Results</h3>
+
+            <div id="validation-alert" class="alert alert-warning"><strong>Running tests.</strong> This might freeze
+                your browser for a few seconds...
+            </div>
+            <table id="validation-results-table" class="table table-hover" style="display: none">
+                <thead>
+                <tr>
+                    <th>Key size</th>
+                    <th>Document</th>
+                    <th>Mean time</th>
+                    <th>Validation status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- template -->
+                <tr class="results-template">
+                    <td class="result-size">512 bits</td>
+                    <td class="result-document"><a href="#">document1.txt</a></td>
+                    <td class="result-time">5 ms</td>
+                    <td class="result-status">OK/FAILED</td>
+                </tr>
+                <!-- / template -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<!-- /.container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script language="JavaScript" type="text/javascript" src="./js/sign.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/jsrsasign/jsrsasign-latest-all-min.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/tests.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<!--<script src="js/docs.min.js"></script>-->
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script>
+    $().ready(function () {
+        var $validationAlert = $("#validation-alert");
+        var $efficiencyAlert = $("#efficiency-alert");
+
+        $("#run-efficiency-btn").click(function (e) {
+            // Muestra la parte de resultados
+            $("#efficiency-results").show();
+            // Limpia la tabla de resultados
+            var $efficiencyTable = $("#efficiency-results-table");
+            $efficiencyTable.find("tbody tr:not(.results-template)").remove();
+            setTimeout(function () {
+                runEfficiencyTests(
+                        function (meanTime, lastSig, key, keySize, doc) { // individualTestCallback
+                            console.log("Test completed: ");
+                            console.log(meanTime);
+
+                            $efficiencyTable.show();
+                            var $tbody = $efficiencyTable.find("tbody");
+                            var $newRow = $tbody.find(".results-template").clone();
+
+                            $newRow.removeClass("results-template");
+                            $newRow.find(".result-size").html(keySize + " bits");
+                            $newRow.find(".result-size").attr("title", key);
+                            $newRow.find(".result-document").html(doc.length + " characters");
+                            $newRow.find(".result-document").attr("title", doc);
+                            $newRow.find(".result-time").html(meanTime + " ms");
+                            $newRow.find(".result-signature").html(lastSig);
+                            $newRow.find(".result-signature").attr("title", lastSig);
+
+                            $tbody.append($newRow);
+                        },
+                        function () { // All done
+                            $efficiencyAlert.hide();
+                        },
+                        function (msg) { // Error
+                            console.log(msg);
+                        }
+                );
+            }, 500);
+        });
+
+        $("#run-validation-btn").click(function (e) {
+            // Muestra la parte de resultados
+            $("#validation-results").show();
+            // Limpia la tabla de resultados
+            var $validationTable = $("#validation-results-table");
+            $validationTable.find("tbody tr:not(.results-template)").remove();
+
+            // Crea una función para mostrar el resultado en la interfaz
+            var setValidationResult = function (publicKey, privateKey, keySize, doc, meanTime, verifiedText) {
+                $validationTable.show();
+                var $tbody = $validationTable.find("tbody");
+                var $newRow = $tbody.find(".results-template").clone();
+
+                $newRow.removeClass("results-template");
+                $newRow.find(".result-size").html(keySize + " bits");
+                $newRow.find(".result-size").attr("title", publicKey);
+                $newRow.find(".result-document").html(doc.length + " characters");
+                $newRow.find(".result-document").attr("title", doc);
+                $newRow.find(".result-time").html(meanTime);
+                $newRow.find(".result-status").html(verifiedText);
+
+                $tbody.append($newRow);
+            };
+            setTimeout(function () {
+                runValidationTests(
+                        function () { // All done
+                            $validationAlert.hide();
+                        },
+                        function (msg) { // Error
+                            console.log(msg);
+                        },
+                        // Validation OK
+                        function (meanTime, publicKey, privateKey, keySize, doc) {
+                            setValidationResult(publicKey, privateKey, keySize, doc, meanTime + " ms", " VALIDATED OK");
+                        },
+                        // Validation failed
+                        function (publicKey, privateKey, keySize, doc) {
+                            setValidationResult(publicKey, privateKey, keySize, doc, "----", "FAILED");
+                        }
+                );
+            }, 500);
+        });
+    });
+
+
+</script>
+
+</body>
+</html>
